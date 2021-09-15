@@ -7,16 +7,31 @@ import (
 	"go.uber.org/zap"
 )
 
+
+// ZaprayLogger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
 type ZaprayLogger struct {
 	*zap.Logger
 }
 
+// NewZaprayLogger creates a new instance of *ZaprayLogger and wraps the logger provided.
+//   z, _ := zap.NewProduction()
+//   log := zapray.NewZaprayLogger(z)
 func NewZaprayLogger(zapLogger *zap.Logger) *ZaprayLogger {
 	return &ZaprayLogger{
 		Logger: zapLogger,
 	}
 }
 
+// Trace creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
+//   log.Trace(ctx).Info("myLog")
+//
+// Once trace is called you can use it as a zap.Logger.
+//
+//   tracedLogger := log.Trace(ctx)
+//   tracedLogger.Info("Log one")
+//   tracedLogger.Info("Log two")
+//
+// This means as above you can trace once and use the provided logger.
 func (zprl *ZaprayLogger) Trace(ctx context.Context) *zap.Logger {
 	if zprl == nil {
 		return nil
