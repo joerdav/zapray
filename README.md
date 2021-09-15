@@ -1,4 +1,4 @@
-# ZapRay - XRay logger that wraps uber/zap# ZapRay - XRay logger that wraps uber/zap# ZapRay - XRay logger that wraps uber/zap
+# ZapRay - XRay logger that wraps uber/zap
 
 [![GoDoc](http://godoc.org/github.com/yosssi/gohtml?status.png)](http://godoc.org/github.com/joe-davidson1802/zapray)
 
