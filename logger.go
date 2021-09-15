@@ -25,5 +25,6 @@ func (zprl *ZaprayLogger) Trace(ctx context.Context) *zap.Logger {
 	if seg == nil {
 		return zprl.Logger
 	}
-	return zprl.Logger.With(zap.String("@xrayTraceId", seg.TraceID), zap.String("@xraySegmentId", seg.ID))
+	traceId := xray.TraceID(ctx)
+	return zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", seg.ID))
 }
