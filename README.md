@@ -30,9 +30,8 @@ func main() {
 	// Create a zapray logger
 	logger := zapray.NewZaprayLogger(z)
 
-	// zapray requires an xray segment to work
-	// if it's not provided it will not provide traceId in the log
-	// in the case of a lambda function your ctx will already contain a segment
+	// zapray requires the context to have been created by an xray segment
+	// if this isn't the case then zapray will log without appending trace information
 	ctx, seg := xray.BeginSegment(context.Background(), "someSegment")
 	defer seg.Close(nil)
 
