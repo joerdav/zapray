@@ -39,3 +39,37 @@ func main() {
 	logger.Trace(ctx).Info("my zap log")
 }
 ```
+
+## Web Example
+
+``` go
+package main
+
+import (
+	"net/http"
+	"github.com/joe-davidson1802/zapray"
+	"github.com/aws/aws-xray-sdk-go/xray"
+	"go.uber.org/zap"
+	)
+	
+var logger *zapray.ZaprayLogger
+	
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
+	logger.TraceRequest(r).Info("some log")
+}
+
+func main() {
+	// Create a zap logger as usual
+	z, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+	// Create a zapray logger
+	logger = zapray.NewZaprayLogger(z)
+	handler := http.HandlerFunc(HandleRequest)
+	segmentedHandler := xray.Handler(handler)
+	// Uncomment to make a subsegment rather than a segment
+	// segmentedHandler := zapray.NewMiddleware(handler)
+	panic(http.ListenAndServe(":8000", segmentedHandler)
+}
+```
