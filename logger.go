@@ -8,16 +8,16 @@ import (
 	"go.uber.org/zap"
 )
 
-// ZaprayLogger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
-type ZaprayLogger struct {
+// Logger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
+type Logger struct {
 	*zap.Logger
 }
 
-// NewZaprayLogger creates a new instance of *ZaprayLogger and wraps the logger provided.
+// NewLogger creates a new instance of *Logger and wraps the logger provided.
 //   z, _ := zap.NewProduction()
-//   log := zapray.NewZaprayLogger(z)
-func NewZaprayLogger(zapLogger *zap.Logger) *ZaprayLogger {
-	return &ZaprayLogger{
+//   log := zapray.NewLogger(z)
+func NewLogger(zapLogger *zap.Logger) *Logger {
+	return &Logger{
 		Logger: zapLogger,
 	}
 }
@@ -32,7 +32,7 @@ func NewZaprayLogger(zapLogger *zap.Logger) *ZaprayLogger {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *ZaprayLogger) Trace(ctx context.Context) *zap.Logger {
+func (zprl *Logger) Trace(ctx context.Context) *zap.Logger {
 	if zprl == nil {
 		return nil
 	}
@@ -54,7 +54,7 @@ func (zprl *ZaprayLogger) Trace(ctx context.Context) *zap.Logger {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *ZaprayLogger) TraceRequest(r *http.Request) *zap.Logger {
+func (zprl *Logger) TraceRequest(r *http.Request) *zap.Logger {
 	if zprl == nil {
 		return nil
 	}

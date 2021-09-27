@@ -17,7 +17,7 @@ func TestZaprayLogger(t *testing.T) {
 	segCtx, seg := xray.BeginSegment(ctx, "testseg")
 	defer seg.Close(nil)
 
-	zprl := NewZaprayLogger(log)
+	zprl := NewLogger(log)
 	zprl.Trace(segCtx).Info("test log")
 
 	if len(recorded.All()) != 1 {
