@@ -22,6 +22,14 @@ func NewLogger(zapLogger *zap.Logger) *Logger {
 	}
 }
 
+// NewNop creates a new instance of *Logger and includes a zap.NewNop().
+//   log := zapray.NewNop()
+func NewNop() *Logger {
+	return &Logger{
+		Logger: zap.NewNop(),
+	}
+}
+
 // Trace creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
 //   log.Trace(ctx).Info("myLog")
 //
