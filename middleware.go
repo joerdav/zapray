@@ -8,10 +8,10 @@ import (
 
 // NewMiddlware creates X-Ray middleware that creates a subsegment
 // for each HTTP request.
-func NewMiddleware(next http.Handler) Middleware {
-	return Middleware{
+func NewMiddleware(next http.Handler) http.Handler {
+	return xray.Handler(xray.NewDynamicSegmentNamer("lambdaHandler", "*"), Middleware{
 		Next: next,
-	}
+	})
 }
 
 // Middlware applies X-Ray segements to the wrapped handler.
