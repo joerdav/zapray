@@ -9,9 +9,9 @@ import (
 // NewMiddlware creates X-Ray middleware that creates a subsegment
 // for each HTTP request.
 func NewMiddleware(next http.Handler) http.Handler {
-	return xray.Handler(xray.NewDynamicSegmentNamer("lambdaHandler", "*"), Middleware{
+	return Middleware{
 		Next: next,
-	})
+	}
 }
 
 // Middlware applies X-Ray segements to the wrapped handler.
@@ -20,7 +20,7 @@ type Middleware struct {
 }
 
 func (h Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx, seg := xray.BeginSubsegment(r.Context(), "httpHandler")
+	ctx, seg := xray.BeginSubsegment(r.Context(), "zaprayTrace")
 	h.Next.ServeHTTP(w, r.WithContext(ctx))
 	seg.Close(nil)
 }

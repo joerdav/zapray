@@ -41,15 +41,11 @@ func NewNop() *Logger {
 //
 // This means as above you can trace once and use the provided logger.
 func (zprl *Logger) Trace(ctx context.Context) *zap.Logger {
-	if zprl == nil {
-		return nil
-	}
-	seg := xray.GetSegment(ctx)
-	if seg == nil {
-		return zprl.Logger
-	}
-	traceId := xray.TraceID(ctx)
-	return zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", seg.ID))
+	_, seg := xray.BeginSubsegment(ctx, "zapraylog")
+	seg.Close(nil)
+	logger := zprl.Logger.With(zap.String("@xrayTraceId", seg.TraceID), zap.String("@xraySegmentId", seg.ParentID))
+	seg.ParentSegment.RemoveSubsegment(seg)
+	return logger
 }
 
 // TraceRequest creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
@@ -63,13 +59,5 @@ func (zprl *Logger) Trace(ctx context.Context) *zap.Logger {
 //
 // This means as above you can trace once and use the provided logger.
 func (zprl *Logger) TraceRequest(r *http.Request) *zap.Logger {
-	if zprl == nil {
-		return nil
-	}
-	seg := xray.GetSegment(r.Context())
-	if seg == nil {
-		return zprl.Logger
-	}
-	traceId := xray.TraceID(r.Context())
-	return zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", seg.ID))
+	return zprl.Trace(r.Context())
 }
