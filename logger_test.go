@@ -2,6 +2,7 @@ package zapray
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/aws/aws-xray-sdk-go/xray"
@@ -23,13 +24,15 @@ func TestZaprayLogger(t *testing.T) {
 	if len(recorded.All()) != 1 {
 		t.Errorf("expected 1 call got %d", len(recorded.All()))
 	}
-	containsTrace := false
+	containsTrace := ""
 	for _, f := range recorded.All()[0].Context {
 		if f.Key == "@xrayTraceId" {
-			containsTrace = true
+			containsTrace = f.String
 		}
 	}
-	if !containsTrace {
+	fmt.Println("seg", seg.ID)
+	fmt.Println("seg", xray.TraceID(segCtx))
+	if containsTrace == "" {
 		t.Errorf("expected log to contain traceId")
 	}
 

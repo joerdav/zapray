@@ -54,6 +54,9 @@ func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
 	if traceId == "" {
 		traceId = xray.TraceID(sCtx)
 	}
+	if traceId == "" {
+		traceId = xray.TraceID(ctx)
+	}
 	logger = zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", segmentId))
 	seg.ParentSegment.RemoveSubsegment(seg)
 	return
