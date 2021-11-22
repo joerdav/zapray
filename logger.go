@@ -40,12 +40,18 @@ func NewNop() *Logger {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *Logger) Trace(ctx context.Context) *zap.Logger {
+func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
+	logger = zprl.Logger
+	defer func() {
+		if r := recover(); r != nil {
+			zprl.Logger.Warn("no segment found")
+		}
+	}()
 	_, seg := xray.BeginSubsegment(ctx, "zapraylog")
 	seg.Close(nil)
-	logger := zprl.Logger.With(zap.String("@xrayTraceId", seg.TraceID), zap.String("@xraySegmentId", seg.ParentID))
+	logger = zprl.Logger.With(zap.String("@xrayTraceId", seg.TraceID), zap.String("@xraySegmentId", seg.ParentID))
 	seg.ParentSegment.RemoveSubsegment(seg)
-	return logger
+	return
 }
 
 // TraceRequest creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
