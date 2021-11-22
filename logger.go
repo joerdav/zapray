@@ -47,9 +47,14 @@ func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
 			zprl.Logger.Warn("no segment found")
 		}
 	}()
-	_, seg := xray.BeginSubsegment(ctx, "zapraylog")
+	sCtx, seg := xray.BeginSubsegment(ctx, "zapraylog")
 	seg.Close(nil)
-	logger = zprl.Logger.With(zap.String("@xrayTraceId", seg.TraceID), zap.String("@xraySegmentId", seg.ParentID))
+	traceId := seg.TraceID
+	segmentId := seg.ParentSegment.ID
+	if traceId == "" {
+		traceId = xray.TraceID(sCtx)
+	}
+	logger = zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", segmentId))
 	seg.ParentSegment.RemoveSubsegment(seg)
 	return
 }
