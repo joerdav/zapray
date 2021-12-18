@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // Logger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
@@ -22,12 +23,35 @@ func NewLogger(zapLogger *zap.Logger) *Logger {
 	}
 }
 
+// New creates a new instance of zap.Logger and wraps it in a zapray.Logger
+func New(core zapcore.Core, options ...zap.Option) *Logger {
+	return NewLogger(zap.New(core, options...))
+}
+
 // NewNop creates a new instance of *Logger and includes a zap.NewNop().
 //   log := zapray.NewNop()
 func NewNop() *Logger {
-	return &Logger{
-		Logger: zap.NewNop(),
+	return NewLogger(zap.NewNop())
+}
+
+// NewDevelopment creates a new instance of *Logger and includes a zap.NewDevelopment().
+//   log := zapray.NewDevelopment()
+func NewDevelopment() (*Logger, error) {
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		return nil, err
 	}
+	return NewLogger(logger), nil
+}
+
+// NewProduction creates a new instance of *Logger and includes a zap.NewProduction().
+//   log := zapray.NewProduction()
+func NewProduction() (*Logger, error) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		return nil, err
+	}
+	return NewLogger(logger), nil
 }
 
 // Trace creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
@@ -40,8 +64,8 @@ func NewNop() *Logger {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
-	logger = zprl.Logger
+func (zprl *Logger) Trace(ctx context.Context) *Logger {
+	logger := zprl.Logger
 	defer func() {
 		if r := recover(); r != nil {
 			zprl.Logger.Warn("no segment found")
@@ -51,7 +75,7 @@ func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
 	traceId := seg.TraceID
 	segmentId := seg.ID
 	logger = zprl.Logger.With(zap.String("@xrayTraceId", traceId), zap.String("@xraySegmentId", segmentId))
-	return
+	return NewLogger(logger)
 }
 
 // TraceRequest creates a new zap.Logger but with the xrayTraceId and xraySegmentId baked in.
@@ -64,6 +88,21 @@ func (zprl *Logger) Trace(ctx context.Context) (logger *zap.Logger) {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *Logger) TraceRequest(r *http.Request) *zap.Logger {
+func (zprl *Logger) TraceRequest(r *http.Request) *Logger {
 	return zprl.Trace(r.Context())
+}
+
+// WithOptions delegates to zap.Logger.WithOptions and wraps the resulting logger into a zapray.Logger
+func (log *Logger) WithOptions(opts ...zap.Option) *Logger {
+	return NewLogger(log.Logger.WithOptions(opts...))
+}
+
+// With delegates to zap.Logger.With and wraps the resulting logger into a zapray.Logger
+func (log *Logger) With(fields ...zap.Field) *Logger {
+	return NewLogger(log.Logger.With(fields...))
+}
+
+// Named delegates to zap.Logger.Named and wraps the resulting logger into a zapray.Logger
+func (log *Logger) Named(s string) *Logger {
+	return NewLogger(log.Logger.Named(s))
 }
