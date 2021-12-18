@@ -9,7 +9,6 @@ ZapRay is a logger for [Go](http://golang.org/). To be used in conjunction with 
 ```
 go get -u github.com/joe-davidson1802/zapray
 ```
-
 ## Example
 
 ``` go
@@ -22,20 +21,18 @@ import (
 	)
 
 func main() {
-	// Create a zap logger as usual
-	z, err := zap.NewProduction()
+	// Create a zapray logger
+	logger, err := zapray.NewProduction()
 	if err != nil {
 		panic(err)
 	}
-	// Create a zapray logger
-	logger := zapray.NewZaprayLogger(z)
 
 	// zapray requires the context to have been created by an xray segment
 	// if this isn't the case then zapray will log without appending trace information
 	ctx, seg := xray.BeginSegment(context.Background(), "someSegment")
 	defer seg.Close(nil)
 
-	// Trace returns a regular zap logger but will log trace id with any logs chained onto it
+	// Trace returns a copy of the logger but will log trace id with any logs chained onto it
 	logger.Trace(ctx).Info("my zap log")
 }
 ```
@@ -59,13 +56,8 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Create a zap logger as usual
-	z, err := zap.NewProduction()
-	if err != nil {
-		panic(err)
-	}
 	// Create a zapray logger
-	logger = zapray.NewZaprayLogger(z)
+	logger = zapray.NewProduction()
 	handler := http.HandlerFunc(HandleRequest)
 	segmentedHandler := xray.Handler(handler)
 	// Uncomment to make a subsegment rather than a segment
