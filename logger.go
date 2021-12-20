@@ -64,12 +64,13 @@ func NewProduction() (*Logger, error) {
 //   tracedLogger.Info("Log two")
 //
 // This means as above you can trace once and use the provided logger.
-func (zprl *Logger) Trace(ctx context.Context) *Logger {
+func (zprl *Logger) Trace(ctx context.Context) (res *Logger) {
 	logger := zprl.Logger
 	defer func() {
 		if r := recover(); r != nil {
 			zprl.Logger.Warn("no segment found")
 		}
+		res = zprl
 	}()
 	seg := xray.GetSegment(ctx)
 	traceId := seg.TraceID
