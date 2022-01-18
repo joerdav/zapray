@@ -10,7 +10,7 @@ import (
 )
 
 // AppVersion is exposed to allow build time versions to be set.
-// go build -ldflags="-x 'github.com/joe-davidson1802/zapray.AppVersion.AppVersion=v1.0.0'"
+// go build -ldflags="-X 'github.com/joe-davidson1802/zapray.AppVersion.AppVersion=v1.0.0'"
 var AppVersion = ""
 
 // Logger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
