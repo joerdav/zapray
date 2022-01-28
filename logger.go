@@ -16,7 +16,7 @@ var AppVersion = ""
 // Logger is a wrapper for zap.Logger, exposes the zap.Logger functions and adds the ability to Trace logs.
 type Logger struct {
 	*zap.Logger
-	SupressMissingSegmentWarning bool
+	SuppressMissingSegmentWarning bool
 }
 
 // NewLogger creates a new instance of *Logger and wraps the logger provided.
@@ -76,7 +76,7 @@ func NewProduction() (*Logger, error) {
 func (zprl *Logger) Trace(ctx context.Context) (res *Logger) {
 	logger := zprl.Logger
 	defer func() {
-		if r := recover(); r != nil && !zprl.SupressMissingSegmentWarning {
+		if r := recover(); r != nil && !zprl.SuppressMissingSegmentWarning {
 			zprl.Logger.Warn("no segment found")
 		}
 		res = zprl
