@@ -78,8 +78,8 @@ func (zprl *Logger) Trace(ctx context.Context) (res *Logger) {
 	defer func() {
 		if r := recover(); r != nil && !zprl.SuppressMissingSegmentWarning {
 			zprl.Logger.Warn("no segment found")
+			res = zprl
 		}
-		res = zprl
 	}()
 	seg := xray.GetSegment(ctx)
 	traceId := seg.TraceID
