@@ -76,8 +76,10 @@ func NewProduction() (*Logger, error) {
 func (zprl *Logger) Trace(ctx context.Context) (res *Logger) {
 	logger := zprl.Logger
 	defer func() {
-		if r := recover(); r != nil && !zprl.SuppressMissingSegmentWarning {
-			zprl.Logger.Warn("no segment found")
+		if r := recover(); r != nil {
+			if !zprl.SuppressMissingSegmentWarning {
+				zprl.Logger.Warn("no segment found")
+			}
 			res = zprl
 		}
 	}()
