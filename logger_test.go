@@ -37,3 +37,18 @@ func TestZaprayLogger(t *testing.T) {
 	}
 
 }
+
+var ctx context.Context
+var zprl *Logger
+
+func init() {
+	actx := context.Background()
+	ctx, _ = xray.BeginSegment(actx, "testseg")
+	zprl, _ = NewDevelopment()
+}
+
+func BenchMem(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		zprl.Trace(ctx).Info("test log")
+	}
+}

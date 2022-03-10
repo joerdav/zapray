@@ -1,4 +1,4 @@
-module github.com/joe-davidson1802/zapray
+module github.com/joerdav/zapray
 
 go 1.16
 

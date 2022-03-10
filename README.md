@@ -1,13 +1,13 @@
 # ZapRay - XRay logger that wraps uber/zap
 
-[![GoDoc](http://godoc.org/github.com/yosssi/gohtml?status.png)](http://godoc.org/github.com/joe-davidson1802/zapray)
+[![GoDoc](http://godoc.org/github.com/yosssi/gohtml?status.png)](http://godoc.org/github.com/joerdav/zapray)
 
 ZapRay is a logger for [Go](http://golang.org/). To be used in conjunction with [AWS X-Ray](https://docs.aws.amazon.com/xray/latest/devguide/security-logging-monitoring.html) and [Zap](https://github.com/uber-go/zap).
 
 ## Install
 
 ```
-go get -u github.com/joe-davidson1802/zapray
+go get -u github.com/joerdav/zapray
 ```
 ## Example
 
@@ -15,7 +15,7 @@ go get -u github.com/joe-davidson1802/zapray
 package main
 
 import (
-	"github.com/joe-davidson1802/zapray"
+	"github.com/joerdav/zapray"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"go.uber.org/zap"
 	)
@@ -44,7 +44,7 @@ package main
 
 import (
 	"net/http"
-	"github.com/joe-davidson1802/zapray"
+	"github.com/joerdav/zapray"
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"go.uber.org/zap"
 	)
